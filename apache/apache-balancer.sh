@@ -139,6 +139,8 @@ case "$1" in
 		echo " -s server"
 		echo " -p port"
 		echo " -m balancer-manager-context-path"
+		echo " -t protocol (http|https)"
+		echo "-c CURL parameter like --insecure"
 		echo ""
 		echo "Commands: "
 		echo " list-balancer"
