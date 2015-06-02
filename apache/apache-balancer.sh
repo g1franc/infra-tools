@@ -108,6 +108,19 @@ status() {
   $CURL ${curl_parameters} -s "${protocol}://${server}:${port}/${manager}" | grep "href" | sed "s/<[^>]*>/ /g"
 }
 
+debug () {
+  echo "server |${server}|"
+  echo "port |${port}|"
+  echo "manager |${manager}|"
+  echo "protocol |${protocol}|"
+  echo "curl_parameters |${server}|"
+  echo "nonce |${nonce}|"
+  echo "balancer |${balancer}|"
+  echo "worker |${worker}|"
+  echo "arg1 |$1|"
+  echo "arg2 |$2|"
+}
+
 case "$1" in
   list-balancer)
     list_balancers "${@:2}"
