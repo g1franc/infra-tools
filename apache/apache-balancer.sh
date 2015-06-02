@@ -15,6 +15,9 @@ manager="balancer-manager"
 protocol="${protocol}"
 curl_parameters=""
 
+# Note: There is a "nonce" by balancer
+# Note: It seems a balancer CAN be listed more than once, maybe a configuration issue !?
+
 while getopts "s:p:m:t:c:" opt; do
   case "$opt" in
     s)
@@ -40,7 +43,7 @@ action=$1
 
 
 list_balancers() {
-  $CURL ${curl_parameters} -s "{protocol}://${server}:${port}/${manager}" | grep "balancer://" | sed "s/.*balancer:\/\/\(.*\)<\/a>.*/\1/"
+  $CURL ${curl_parameters} -s "${protocol}://${server}:${port}/${manager}" | grep "balancer://" | sed "s/.*balancer:\/\/\(.*\)<\/a>.*/\1/"
 }
 
 list_workers() {
@@ -50,7 +53,7 @@ list_workers() {
     echo "  balancer_name :    balancer name"
     exit 1
   fi  
-  $CURL ${curl_parameters} -s "{protocol}://${server}:${port}/${manager}" | grep "/balancer-manager?b=${balancer}&w" | sed "s/.*href='\(.[^']*\).*/\1/" | sed "s/.*w=\(.*\)&.*/\1/"
+  $CURL ${curl_parameters} -s "${protocol}://${server}:${port}/${manager}" | grep "/balancer-manager?b=${balancer}&w" | sed "s/.*href='\(.[^']*\).*/\1/" | sed "s/.*w=\(.*\)&.*/\1/"
 }
 
 enable() {
@@ -63,7 +66,7 @@ enable() {
     exit 1
   fi
   
-  nonce=`$CURL ${curl_parameters} -s "{protocol}://${server}:${port}/${manager}" | grep nonce | grep "${balancer}" | sed "s/.*nonce=\(.*\)['\"].*/\1/" | tail -n 1`
+  nonce=`$CURL ${curl_parameters} -s "${protocol}://${server}:${port}/${manager}" | grep nonce | grep "${balancer}" | sed "s/.*nonce=\(.*\)['\"].*/\1/" | tail -n 1`
   if [ -z "$nonce" ]; then
     echo "balancer_name ($balancer) not found"
     exit 1
@@ -71,8 +74,8 @@ enable() {
 
   echo "Enabling $2 of $1..."
   # Apache 2.2.x
-  #$CURL ${curl_parameters} -s -o /dev/null -XPOST "{protocol}://${server}:${port}/${manager}?" -d b="${balancer}" -d w="${worker}" -d nonce="${nonce}" -d dw=Enable
-  $CURL ${curl_parameters} -s -o /dev/null -XPOST "{protocol}://${server}:${port}/${manager}?" -d b="${balancer}" -d w="${worker}" -d nonce="${nonce}" -d w_status_D=0
+  #$CURL ${curl_parameters} -s -o /dev/null -XPOST "${protocol}://${server}:${port}/${manager}?" -d b="${balancer}" -d w="${worker}" -d nonce="${nonce}" -d dw=Enable
+  $CURL ${curl_parameters} -s -o /dev/null -XPOST "${protocol}://${server}:${port}/${manager}?" -d b="${balancer}" -d w="${worker}" -d nonce="${nonce}" -d w_status_D=0
   sleep 2
   status
 }
@@ -88,21 +91,21 @@ disable() {
   fi
   
   echo "Disabling $2 of $1..."
-  nonce=`$CURL ${curl_parameters} -s "{protocol}://${server}:${port}/${manager}" | grep nonce | grep "${balancer}" | sed "s/.*nonce=\(.*\)['\"].*/\1/" | tail -n 1`
+  nonce=`$CURL ${curl_parameters} -s "${protocol}://${server}:${port}/${manager}" | grep nonce | grep "${balancer}" | sed "s/.*nonce=\(.*\)['\"].*/\1/" | tail -n 1`
   if [ -z "$nonce" ]; then
     echo "balancer_name ($balancer) not found"
     exit 1
   fi
 
   # Apache 2.2.x
-  #$CURL ${curl_parameters} -s -o /dev/null -XPOST "{protocol}://${server}:${port}/${manager}?" -d b="${balancer}" -d w="${worker}" -d nonce="${nonce}" -d dw=Disable
-  $CURL ${curl_parameters} -s -o /dev/null -XPOST "{protocol}://${server}:${port}/${manager}?" -d b="${balancer}" -d w="${worker}" -d nonce="${nonce}" -d w_status_D=1
+  #$CURL ${curl_parameters} -s -o /dev/null -XPOST "${protocol}://${server}:${port}/${manager}?" -d b="${balancer}" -d w="${worker}" -d nonce="${nonce}" -d dw=Disable
+  $CURL ${curl_parameters} -s -o /dev/null -XPOST "${protocol}://${server}:${port}/${manager}?" -d b="${balancer}" -d w="${worker}" -d nonce="${nonce}" -d w_status_D=1
   sleep 2
   status
 }
 
 status() {
-  $CURL ${curl_parameters} -s "{protocol}://${server}:${port}/${manager}" | grep "href" | sed "s/<[^>]*>/ /g"
+  $CURL ${curl_parameters} -s "${protocol}://${server}:${port}/${manager}" | grep "href" | sed "s/<[^>]*>/ /g"
 }
 
 case "$1" in
