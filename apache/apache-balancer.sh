@@ -41,7 +41,6 @@ done
 shift $(($OPTIND - 1))
 action=$1
 
-
 list_balancers() {
 	$CURL ${curl_parameters} -s "${protocol}://${server}:${port}/${manager}" | grep "balancer://" | sed "s/.*balancer:\/\/\(.*\)<\/a>.*/\1/"
 }
@@ -76,8 +75,6 @@ enable() {
 	# Apache 2.2.x
 	#$CURL ${curl_parameters} -s -o /dev/null -XPOST "${protocol}://${server}:${port}/${manager}?" -d b="${balancer}" -d w="${worker}" -d nonce="${nonce}" -d dw=Enable
 	$CURL ${curl_parameters} -s -o /dev/null -XPOST "${protocol}://${server}:${port}/${manager}?" -d b="${balancer}" -d w="${worker}" -d nonce="${nonce}" -d w_status_D=0
-	sleep 2
-	status
 }
 
 disable() {
@@ -100,8 +97,6 @@ disable() {
 	# Apache 2.2.x
 	#$CURL ${curl_parameters} -s -o /dev/null -XPOST "${protocol}://${server}:${port}/${manager}?" -d b="${balancer}" -d w="${worker}" -d nonce="${nonce}" -d dw=Disable
 	$CURL ${curl_parameters} -s -o /dev/null -XPOST "${protocol}://${server}:${port}/${manager}?" -d b="${balancer}" -d w="${worker}" -d nonce="${nonce}" -d w_status_D=1
-	sleep 2
-	status
 }
 
 status() {
@@ -152,5 +147,3 @@ case "$1" in
 		echo " disable balancer_name worker_route"
 		exit 1
 esac
-
-exit $?
