@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 
 # Set up a default search path
 PATH="/usr/bin:/bin"
